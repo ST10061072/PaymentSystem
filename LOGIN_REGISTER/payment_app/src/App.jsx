@@ -5,6 +5,8 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import Login from './Login'
 import PaymentProcess from './components/PaymentProcess';
 import CustomerDashboard from './components/CustomerDashboard';
+import Home from './Home';
+import EmployeeLogin from './EmployeeLogin';
 
 function App() {
 
@@ -17,6 +19,8 @@ function App() {
           <Route path='/login' element={<Login />}></Route>
           <Route path="/payment-process" element={<PaymentProcess />} />
           <Route path='/customerDashboard' element={<CustomerDashboard />}></Route>
+          <Route path='/home' element={<Home />}></Route>
+          <Route path='/employeeLogin' element={<EmployeeLogin />}></Route>
       </Routes>
     </Router>
   )
