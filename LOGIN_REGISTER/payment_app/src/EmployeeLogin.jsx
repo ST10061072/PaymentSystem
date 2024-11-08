@@ -53,7 +53,7 @@ const EmployeeLogin = () => {
             if (token) {
                 localStorage.setItem("token", token);
                 console.log("Login successful, token stored:", token);
-                navigate("/home");
+                navigate("/employeeDashboard");
             } else {
                 console.log("Login failed: No token received.");
             }

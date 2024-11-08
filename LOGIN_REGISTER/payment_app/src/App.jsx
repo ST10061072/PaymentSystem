@@ -7,6 +7,8 @@ import PaymentProcess from './components/PaymentProcess';
 import CustomerDashboard from './components/CustomerDashboard';
 import Home from './Home';
 import EmployeeLogin from './EmployeeLogin';
+import EmployeeDashboard from './EmployeeDashboard';
+import UserTransactions from './TransactionVerification';
 
 function App() {
 
@@ -21,6 +23,8 @@ function App() {
           <Route path='/customerDashboard' element={<CustomerDashboard />}></Route>
           <Route path='/home' element={<Home />}></Route>
           <Route path='/employeeLogin' element={<EmployeeLogin />}></Route>
+          <Route path='/employeeDashboard' element={<EmployeeDashboard/>} ></Route>
+          <Route path='/TransactionVerification' element={<UserTransactions/>} ></Route>
       </Routes>
     </Router>
   )
