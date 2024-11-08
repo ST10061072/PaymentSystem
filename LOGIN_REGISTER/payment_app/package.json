@@ -16,8 +16,10 @@
     "axios": "^1.7.7",
     "bootstrap": "^5.3.3",
     "cors": "^2.8.5",
+    "dompurify": "^3.1.7",
     "fs": "^0.0.1-security",
     "jwt-decode": "^4.0.0",
+    "mongoose": "^8.8.0",
     "path": "^0.12.7",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
@@ -33,6 +35,6 @@
     "eslint-plugin-react-hooks": "^5.1.0-rc.0",
     "eslint-plugin-react-refresh": "^0.4.12",
     "globals": "^15.9.0",
-    "vite": "^5.4.8"
+    "vite": "^5.4.10"
   }
 }
