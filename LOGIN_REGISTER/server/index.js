@@ -18,6 +18,7 @@ const auth = require('./auth');
 dotenv.config();
 const UserModel = require('./models/User');
 const Transaction= require('./models/Transaction'); // Import your Transaction model
+const EmployeeModel = require('./models/Employee');
 const JWT_SECRET = process.env.JWT_SECRET;
 
 const app = express()
@@ -158,24 +159,49 @@ app.post("/login", async (req, res) => {
     }
 });
 
-app.post("/employeelogin", async (req, res) => {
-    const { email, password } = req.body;
+
+
+async function hashPassword(password) {
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+    return hashedPassword;
+}
+
+//Employee login logic
+app.post('/employeeLogin', async (req, res) => {
+    console.log("Got Here");
+    const { username, password } = req.body;
     try {
-        const user = await UserModel.findOne({ email });
-        if (user) {
-            const isMatch = await bcrypt.compare(password, user.password);
+
+        const employee = await EmployeeModel.findOne({ username });
+        if (employee) {
+            const isMatch = await bcrypt.compare(password, employee.password);
             if (isMatch) {
-                const token = jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: '1h' }); // Token expires in 1 hour
-                return res.json({ message: "SUCCESS", token }); // Send the token in the response
-            } else {
+                const token = jwt.sign({ employeeId: employee._id, emlpoyeeName: employee.name }, 
+                // Token expires in 1 hour
+                JWT_SECRET, { expiresIn: '1h' }); 
+                // Send the token in the response
+                return res.json({ message: "SUCCESS", token });
+            } else 
+            {
                 return res.status(400).json("Incorrect password");
             }
+
         } else {
-            return res.status(400).json("User does not exist");
+            return res.status(400).json("Employee does not exist");
         }
+        
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
+});
+
+app.get('/employeeLogin', (req, res) => {
+    res.render('employeeLogin');  
+});
+
+app.get('/home', auth, (req, res) => {
+    res.status(200).json({message: "Welcome"})
 });
 
 // Transaction Schema for MongoDB

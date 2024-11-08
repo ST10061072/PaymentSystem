@@ -92,6 +92,12 @@ function Login(){
                     <Link to="/register" className="btn btn-default border w-100 rounded-0 text-decoration-none">
                         Register
                     </Link>
+                    <br />
+                    <br />
+                    <p> Are you an Employee?</p>
+                    <Link to="/EmployeeLogin" >
+                        Employee Portal?
+                    </Link>
             </div>
         </div>
     )
