@@ -158,6 +158,26 @@ app.post("/login", async (req, res) => {
     }
 });
 
+app.post("/employeelogin", async (req, res) => {
+    const { email, password } = req.body;
+    try {
+        const user = await UserModel.findOne({ email });
+        if (user) {
+            const isMatch = await bcrypt.compare(password, user.password);
+            if (isMatch) {
+                const token = jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: '1h' }); // Token expires in 1 hour
+                return res.json({ message: "SUCCESS", token }); // Send the token in the response
+            } else {
+                return res.status(400).json("Incorrect password");
+            }
+        } else {
+            return res.status(400).json("User does not exist");
+        }
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
 // Transaction Schema for MongoDB
 const transactionSchema = new mongoose.Schema({
     //fromAccountNumber: { type: String, required: true },
