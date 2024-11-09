@@ -232,7 +232,25 @@ const authToken = (req, res, next) => {
       res.status(401).json({ message: 'Token is not valid' });
     }
   };
+// Route to fetch pending transactions
+app.get('/transactions/pending', auth, async (req, res) => {
+    try {
+        const pendingTransactions = await Transaction.find({ status: 'Pending' });
+        res.json(pendingTransactions);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
 
+// Route to fetch verified transactions
+app.get('/transactions/verified', auth, async (req, res) => {
+    try {
+        const verifiedTransactions = await Transaction.find({ status: 'Verified' });
+        res.json(verifiedTransactions);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
 // Process Payment and store it in MongoDB
 app.post('/payment-process', authToken, async (req, res) => {
     console.log("Got Here");
