@@ -70,6 +70,7 @@ const TransactionVerification = () => {
   const handleRejectTransaction = (transactionId) => {
     setTransactions(transactions.filter(transaction => transaction._id !== transactionId));
     setSuccess(`Transaction ${transactionId} has been rejected.`);
+    navigate('/employee-portal'); // Redirect to the employee portal
   };
 
   return (
