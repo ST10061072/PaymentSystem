@@ -8,8 +8,8 @@ import CustomerDashboard from './components/CustomerDashboard';
 import Home from './Home';
 import EmployeeLogin from './EmployeeLogin';
 import EmployeeDashboard from './EmployeeDashboard';
-import UserTransactions from './TransactionVerification';
-
+import TransactionVerification from './TransactionVerification';
+import AllTransactions from './AllTransactions';
 function App() {
 
   return (
@@ -24,7 +24,8 @@ function App() {
           <Route path='/home' element={<Home />}></Route>
           <Route path='/employeeLogin' element={<EmployeeLogin />}></Route>
           <Route path='/employeeDashboard' element={<EmployeeDashboard/>} ></Route>
-          <Route path='/TransactionVerification' element={<UserTransactions/>} ></Route>
+          <Route path='/TransactionVerification' element={<TransactionVerification/>} ></Route>
+          <Route path='/allTransactions' element={<AllTransactions/>} ></Route>
       </Routes>
     </Router>
   )
