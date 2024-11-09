@@ -14,6 +14,7 @@ const https = require('https');
 const path = require('path');
 const jwt = require('jsonwebtoken');
 const auth = require('./auth');
+const router = express.Router();
 
 dotenv.config();
 const UserModel = require('./models/User');
@@ -214,7 +215,8 @@ const transactionSchema = new mongoose.Schema({
     date: { type: Date, default: Date.now },
     recipientName: { type: String, required: true },
     recipientBank: { type: String, required: true },
-    swiftCode: { type: String, required: true }
+    swiftCode: { type: String, required: true },
+    status:{type: String, required: true, default: 'pending'}
 });
 
 
@@ -254,8 +256,8 @@ app.get('/transactions/verified', auth, async (req, res) => {
 // Process Payment and store it in MongoDB
 app.post('/payment-process', authToken, async (req, res) => {
     console.log("Got Here");
-    const { recipientAccountNumber, amount, recipientName, recipientBank,  swiftCode} = req.body;
-
+    const { recipientAccountNumber, amount, recipientName, recipientBank,  swiftCode, status} = req.body;
+    console.log(req.body);  // Before the axios request to ensure status is there
     try {
        // Use the userId from the token to find the user
         const user = await UserModel.findById(req.userId);
@@ -271,8 +273,11 @@ app.post('/payment-process', authToken, async (req, res) => {
             date: new Date(), // Add the date of the transaction
             recipientName,
             recipientBank,
-            swiftCode
+            swiftCode,
+            status: 'pending'
         });
+        
+
 
         // Save the transaction in MongoDB
         await transaction.save();
@@ -299,6 +304,75 @@ app.get("/payment-receipts/:userId", async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 });
+
+// Get pending transactions
+app.get('/employeeDashboard', auth, async (req, res) => {
+    //console.log("Got here Employee")
+    try {
+        const pendingTransactions = await Transaction.find({ status: 'pending' });
+        res.json(pendingTransactions);
+    } catch (error) {   
+        res.status(500).json({ message: error.message });
+    }
+});
+
+//-------------------------------------------------------------------------------------------------------------//
+
+// To verify or reject a transaction 
+app.post('/transactions/verify/:transactionId', authToken, async (req, res) => {
+    const { transactionId } = req.params;
+    const { status } = req.body; // Should be either "verified" or "rejected"
+
+    console.log(`Verifying transaction ${transactionId} with status ${status}...`);
+
+    if (status !== 'verified' && status !== 'rejected') {
+        return res.status(400).json({ message: "Invalid status" });
+    }
+
+    try {
+        const transaction = await Transaction.findById(transactionId);
+        if (!transaction) {
+            return res.status(404).json({ message: "Transaction not found" });
+        }
+
+        if (transaction.status !== 'pending') {
+            return res.status(400).json({ message: "Transaction is already verified or rejected" });
+        }
+
+        // Update the transaction status
+        transaction.status = status;
+        transaction.verifiedDate = new Date();
+        await transaction.save();
+
+        console.log(`Transaction ${transactionId} ${status} successfully!`);
+        res.status(200).json({ message: `Transaction ${status} successfully!` });
+    } catch (error) {
+        console.error(`Error verifying transaction ${transactionId}:`, error);
+        res.status(500).json({ message: error.message });
+    }
+});
+
+// Route to fetch a specific transaction (for review purposes)
+app.get('/transactions/:transactionId', authToken, async (req, res) => {
+    const { transactionId } = req.params;
+
+    console.log(`Fetching transaction ${transactionId}...`);
+
+    try {
+        const transaction = await Transaction.findById(transactionId);
+        if (!transaction) {
+            return res.status(404).json({ message: "Transaction not found" });
+        }
+
+        res.status(200).json(transaction);
+    } catch (error) {
+        console.error(`Error fetching transaction ${transactionId}:`, error);
+        res.status(500).json({ message: error.message });
+    }
+});
+
+//-------------------------------------------------------------------------------------------------------------//
+
 
 // SSL & Error Handling Middleware
 app.use((req, res, next) => {
