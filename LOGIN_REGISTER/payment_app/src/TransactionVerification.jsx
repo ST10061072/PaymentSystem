@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Container, Paper, Grid, TextField, Typography, Checkbox, Alert } from '@mui/material';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom'; 
+import { useLocation, useNavigate, useParams } from 'react-router-dom'; 
 import { Link } from "react-router-dom";
 
 const TransactionVerification = () => {
@@ -11,19 +11,53 @@ const TransactionVerification = () => {
   const [transactionDetails, setTransactionDetails] = useState(null);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
-
+  const location = useLocation();
+  const token = location.state?.token;
+  console.log("location state:", location.state)
+  
+  //Retrives transactionId from EmployeeDasboard
   useEffect(() => {
+    if(!token){
+      setError("token not found")
+      return;
+    }
     const fetchTransaction = async () => {
+      console.log("token:",token)
       try {
-        const response = await axios.get(`https://localhost:3000/transactions/${transactionId}`);
-        setTransactions(response.data);
+        const response = await axios.get(`https://localhost:3000/transactionVerification/${transactionId}`,{
+          headers: {
+            Authorization: `Bearer ${token}`//Attach token
+          }
+        });
+        console.log("Response", response)     
+        if (response.data) {
+          // Handle the response directly
+          if (response.data.transactions && Array.isArray(response.data.transactions)) {
+            setTransactions(response.data.transactions);
+          } else if (response.data.error) {
+            setError(response.data.error);
+          } else {
+            // Directly check if the response is a single transaction object
+            setTransactions([response.data]); 
+          }
+        } else {
+          setError("Empty response from server.");
+        }
       } catch (error) {
-        setError("Error fetching transactions. Please try again later.");
-        console.error("Error fetching transactions:", error);
+        if (error.response) {
+          console.error("Server error:", error.response);
+          setError(`Server error: ${error.response.data.error || "Please try again later."}`);
+        } else if (error.request) {
+          console.error("Network error:", error.request);
+          setError("Network error. Please check your connection and try again.");
+        } else {
+          console.error("Error:", error.message);
+          setError("An unexpected error occurred. Please try again later.");
+        }
       }
     };
     fetchTransaction();
-  }, [transactionId]);
+  }, [transactionId,token]);
 
   const handleVerifyField = (transactionId, field, isVerified) => {
     setVerifiedFields(prevState => ({
@@ -45,6 +79,7 @@ const TransactionVerification = () => {
     return transactionVerification && Object.values(transactionVerification).every(value => value === true);
   };
 
+ //Code for submit button
   const handleSubmitToSwift = () => {
     const verifiedTransactions = transactions
       .filter(transaction => isTransactionValid(transaction) && isTransactionFullyVerified(transaction._id))

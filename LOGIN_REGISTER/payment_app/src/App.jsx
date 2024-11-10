@@ -24,7 +24,7 @@ function App() {
           <Route path='/home' element={<Home />}></Route>
           <Route path='/employeeLogin' element={<EmployeeLogin />}></Route>
           <Route path='/employeeDashboard' element={<EmployeeDashboard/>} ></Route>
-          <Route path='/transactionVerification' element={<TransactionVerification/>} ></Route>
+          <Route path='/transactionVerification/:transactionId' element={<TransactionVerification />} />
           <Route path='/allTransactions' element={<AllTransactions/>} ></Route>
       </Routes>
     </Router>

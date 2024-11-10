@@ -170,7 +170,7 @@ async function hashPassword(password) {
 
 //Employee login logic
 app.post('/employeeLogin', async (req, res) => {
-    console.log("Got Here");
+    //console.log("Got Here");
     const { username, password } = req.body;
     try {
 
@@ -319,7 +319,7 @@ app.get('/employeeDashboard', auth, async (req, res) => {
 //-------------------------------------------------------------------------------------------------------------//
 
 // To verify or reject a transaction 
-app.post('/transactions/verify/:transactionId', authToken, async (req, res) => {
+app.post(`/transactionVerification/:transactionId`, authToken, async (req, res) => {
     const { transactionId } = req.params;
     const { status } = req.body; // Should be either "verified" or "rejected"
 
@@ -353,7 +353,7 @@ app.post('/transactions/verify/:transactionId', authToken, async (req, res) => {
 });
 
 // Route to fetch a specific transaction (for review purposes)
-app.get('/transactions/:transactionId', authToken, async (req, res) => {
+app.get('/transactionVerification/:transactionId', authToken, async (req, res) => {
     const { transactionId } = req.params;
 
     console.log(`Fetching transaction ${transactionId}...`);

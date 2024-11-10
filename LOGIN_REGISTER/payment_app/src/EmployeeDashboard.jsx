@@ -33,7 +33,10 @@ const EmployeeDashboard = () => {
 
   // Navigate to transaction verification page
   const handleViewTransactions = (transactionId) => {
-    navigate(`/TransactionVerification/${transactionId}`);
+    const token = localStorage.getItem('token');
+    navigate(`/transactionVerification/${transactionId}`,{
+      state: { token },
+    });
   };
 
   // Navigate to all transactions page
