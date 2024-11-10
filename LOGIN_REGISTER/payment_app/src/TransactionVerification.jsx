@@ -14,6 +14,7 @@ const TransactionVerification = () => {
   const location = useLocation();
   const token = location.state?.token;
   console.log("location state:", location.state)
+  const navigate = useNavigate();
   
   //Retrives transactionId from EmployeeDasboard
   useEffect(() => {
@@ -87,12 +88,11 @@ const TransactionVerification = () => {
       ...transaction,
       verified: verifiedFields[transaction._id]
     }));
-
   if (verifiedTransactions.length === 0) {
     setError("No transactions are fully verified for submission.");
     return;
   }
-
+  try{
     const response = await axios.post(`https://localhost:3000/transactionVerification/${transactionId}`, {
       status: 'verified'
     }, {
@@ -104,9 +104,12 @@ const TransactionVerification = () => {
       setTransactions(transactions.filter(transaction => transaction._id !== transactionId));
       setSuccess(`Transaction ${transactionId} has been rejected.`);
       navigate('/employeeDashboard'); // Redirect to the employee portal
-    } 
+    } else{
     setError("Error rejecting transaction. Please try again later.");
-  
+    }
+  }catch(error){
+    setError("Error verifying transaction. Please try again later.");
+  }
 };
 
 const handleRejectTransaction = async (transactionId) => {

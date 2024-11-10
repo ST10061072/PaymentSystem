@@ -372,6 +372,18 @@ app.get('/transactionVerification/:transactionId', authToken, async (req, res) =
 });
 
 //-------------------------------------------------------------------------------------------------------------//
+//Gets all transactions
+app.get('/allTransactions', authToken, async (req, res) => {
+
+    try{
+        const transactions = await Transaction.find();
+        res.json(transactions);
+        console.log(`Fetching all transactions`);
+    }catch(error){
+        console.error('Error fetching transactions:', error);
+        res.status(500).json({ message: 'Error fetching transactions' });
+    }
+});
 
 
 // SSL & Error Handling Middleware
