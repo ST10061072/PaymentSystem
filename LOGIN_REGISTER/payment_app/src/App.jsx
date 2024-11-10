@@ -7,8 +7,9 @@ import PaymentProcess from './components/PaymentProcess';
 import CustomerDashboard from './components/CustomerDashboard';
 import Home from './Home';
 import EmployeeLogin from './EmployeeLogin';
+import EmployeeDashboard from './EmployeeDashboard';
 import TransactionVerification from './TransactionVerification';
-
+import AllTransactions from './AllTransactions';
 function App() {
 
   return (
@@ -22,7 +23,9 @@ function App() {
           <Route path='/customerDashboard' element={<CustomerDashboard />}></Route>
           <Route path='/home' element={<Home />}></Route>
           <Route path='/employeeLogin' element={<EmployeeLogin />}></Route>
-          <Route path='/transactionVerification' element={<TransactionVerification />}></Route>
+          <Route path='/employeeDashboard' element={<EmployeeDashboard/>} ></Route>
+          <Route path='/transactionVerification/:transactionId' element={<TransactionVerification />} />
+          <Route path='/allTransactions' element={<AllTransactions/>} ></Route>
       </Routes>
     </Router>
   )
