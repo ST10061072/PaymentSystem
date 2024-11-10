@@ -70,7 +70,7 @@ const TransactionVerification = () => {
   };
 
   const isTransactionValid = (transaction) => {
-    const requiredFields = ['payeeName', 'payeeBank', 'accountNumber', 'amount', 'swiftCode'];
+    const requiredFields = ['recipientName', 'recipientBank', 'recipientAccountNumber', 'amount', 'swiftCode'];
     return requiredFields.every(field => transaction[field]);
   };
 
@@ -80,35 +80,49 @@ const TransactionVerification = () => {
   };
 
  //Code for submit button
-  const handleSubmitToSwift = () => {
-    const verifiedTransactions = transactions
-      .filter(transaction => isTransactionValid(transaction) && isTransactionFullyVerified(transaction._id))
-      .map(transaction => ({
-        ...transaction,
-        verified: verifiedFields[transaction._id]
-      }));
+ const handleSubmitToSwift = async () => {
+  const verifiedTransactions = transactions
+    .filter(transaction => isTransactionValid(transaction) && isTransactionFullyVerified(transaction._id))
+    .map(transaction => ({
+      ...transaction,
+      verified: verifiedFields[transaction._id]
+    }));
 
-    if (verifiedTransactions.length === 0) {
-      setError("No transactions are fully verified for submission.");
-      return;
-    }
+  if (verifiedTransactions.length === 0) {
+    setError("No transactions are fully verified for submission.");
+    return;
+  }
 
-    axios.post('https://localhost:3000/submitToSwift', { transactions: verifiedTransactions })
-      .then(response => {
-        setSuccess("Transactions successfully submitted to SWIFT.");
-        setError(null);
-      })
-      .catch(error => {
-        setError("Error submitting transactions to SWIFT. Please try again later.");
-        setSuccess(null);
-      });
-  };
+    const response = await axios.post(`https://localhost:3000/transactionVerification/${transactionId}`, {
+      status: 'verified'
+    }, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+    if (response.status === 200) {
+      setTransactions(transactions.filter(transaction => transaction._id !== transactionId));
+      setSuccess(`Transaction ${transactionId} has been rejected.`);
+      navigate('/employeeDashboard'); // Redirect to the employee portal
+    } 
+    setError("Error rejecting transaction. Please try again later.");
+  
+};
 
-  const handleRejectTransaction = (transactionId) => {
+const handleRejectTransaction = async (transactionId) => {
+  
+    const response = await axios.post(`https://localhost:3000/transactionVerification/${transactionId}`, {
+      status: 'rejected'
+    }, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
     setTransactions(transactions.filter(transaction => transaction._id !== transactionId));
     setSuccess(`Transaction ${transactionId} has been rejected.`);
-    navigate('/employee-portal'); // Redirect to the employee portal
-  };
+    navigate('/employeeDashboard'); 
+  
+};
 
   return (
     <Container>
@@ -123,7 +137,7 @@ const TransactionVerification = () => {
             <Typography variant="h6" style={styles.transactionTitle}>Transaction ID: {transaction._id}</Typography>
 
             <Grid container spacing={3}>
-              {['payeeName', 'payeeBank', 'accountNumber', 'amount', 'swiftCode'].map(field => (
+              {['recipientName', 'recipientBank', 'recipientAccountNumber', 'amount', 'swiftCode'].map(field => (
                 <Grid item xs={12} key={field}>
                   <TextField
                     fullWidth
