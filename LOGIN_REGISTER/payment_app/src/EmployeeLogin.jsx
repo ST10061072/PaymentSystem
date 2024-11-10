@@ -1,101 +1,101 @@
 import React, { useState } from 'react';
-import { Link } from "react-router-dom";
-import axios from "axios";
-import {useNavigate} from "react-router-dom"
+import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { Box, Button, Container, Typography, TextField, Paper } from '@mui/material';
 import DOMPurify from 'dompurify';
-import { set } from 'mongoose';
+import { blue, grey } from '@mui/material/colors';
 
 const EmployeeLogin = () => {
-
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
+    const navigate = useNavigate();
 
-    // Define a regex pattern for allowed characters (e.g., alphanumeric and some special characters)
+    // Define a regex pattern for allowed characters
     const usernamePattern = /^[a-zA-Z0-9_]{3,20}$/;
     const passwordPattern = /^[a-zA-Z0-9!@#$%^&*()_+]{6,20}$/;
 
-    // Validate the input against the pattern
-    const validateInput = (input, pattern) => {
-        return pattern.test(input);
-    };
+    // Validate the input
+    const validateInput = (input, pattern) => pattern.test(input);
 
-    const navigate = useNavigate()
-    const token = localStorage.getItem('token');
-
-    //Logic when Login button is clicked
+    // Handle login logic
     const handleLogin = (e) => {
         e.preventDefault();
 
-        // Validate the username
         if (!validateInput(username, usernamePattern)) {
-            setError('Invalid username. Only alphanumeric characters and underscores are allowed, Must be 3-20 characters long.');
+            setError('Invalid username. Use alphanumeric characters, 3-20 characters.');
             return;
-          }
-          if (!validateInput(password, passwordPattern)) {
-            setError('Invalid password. Only alphanumeric characters and special characters !@#$%^&*()_+ are allowed, Must be 6-20 characters long.');
+        }
+        if (!validateInput(password, passwordPattern)) {
+            setError('Invalid password. Use alphanumeric and !@#$%^&*()_+, 6-20 characters.');
             return;
-          }
-          setError('');
+        }
+        setError('');
 
-        // Sanitize the input
         const cleanUsername = DOMPurify.sanitize(username);
         const cleanPassword = DOMPurify.sanitize(password);
 
-        //Login logic using Parameterized queries for SQL injection prevention
         axios.post('https://localhost:3000/employeeLogin', {
             username: cleanUsername,
-            password: cleanPassword })
-
-        //If login is successful, store token in local storage and navigate to employee dashboard
+            password: cleanPassword
+        })
         .then(result => {
             const token = result.data.token;
             if (token) {
-                localStorage.setItem("token", token);
-                console.log("Login successful, token stored:", token);
-                navigate("/employeeDashboard");
+                localStorage.setItem('token', token);
+                navigate('/employeeDashboard');
             } else {
-                console.log("Login failed: No token received.");
+                setError('Login failed: No token received.');
             }
         })
-        .catch(err => {
-            console.error(err);
-            console.log(`An error occurred: ${err.message}`);
-        });
-
-        //Log the employee ID and password for debugging
-        console.log('Username:', username);
-        console.log('Password:', password);
+        .catch(err => setError(`An error occurred: ${err.message}`));
     };
 
     return (
-        <div className="login-container">
-            <h2 className="employee-header">Employee Portal</h2>
-            <form onSubmit={handleLogin} className ="employee-form">
-                <div className="form-group">
-                    <label htmlFor="username">Username:</label>
-                    <input
-                        type="text"
-                        id="username"
+        <Container maxWidth="sm" sx={{ mt: 8 }}>
+            <Paper elevation={3} sx={{ padding: 4, bgcolor: blue[50], borderRadius: 2 }}>
+                <Typography variant="h5" align="center" gutterBottom sx={{ color: blue[700] }}>
+                    Employee Portal
+                </Typography>
+                <Typography variant="body2" align="center" color="error" sx={{ mb: 2 }}>
+                    {error}
+                </Typography>
+                <Box component="form" onSubmit={handleLogin} sx={{ textAlign: 'center' }}>
+                    <TextField
+                        label="Username"
+                        variant="outlined"
+                        fullWidth
+                        required
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
-                        required
+                        sx={{ mb: 3, bgcolor: grey[100] }}
                     />
-                </div>
-                <div className="form-group">
-                    <label htmlFor="password">Password:</label>
-                    <input
+                    <TextField
+                        label="Password"
                         type="password"
-                        id="password"
+                        variant="outlined"
+                        fullWidth
+                        required
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                        required
+                        sx={{ mb: 3, bgcolor: grey[100] }}
                     />
-                </div>
-                <button type="submit">Login</button>
-            </form>
-            <Link to="/login">Are you a Customer?</Link>
-        </div>
+                    <Button
+                        type="submit"
+                        variant="contained"
+                        fullWidth
+                        sx={{ bgcolor: blue[500], color: 'white', mb: 2 }}
+                    >
+                        Login
+                    </Button>
+                </Box>
+                <Typography variant="body2" align="center" sx={{ color: blue[500] }}>
+                    <Link to="/login" style={{ textDecoration: 'none', color: blue[500] }}>
+                        Are you a Customer?
+                    </Link>
+                </Typography>
+            </Paper>
+        </Container>
     );
 };
 

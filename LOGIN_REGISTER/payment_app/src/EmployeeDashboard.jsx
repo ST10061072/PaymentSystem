@@ -2,28 +2,17 @@ import React, { useEffect, useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AppBar, Toolbar, Typography, Button, Container, Box, Card, CardContent, CardActions , Grid } from '@mui/material';
 import { blue, grey } from '@mui/material/colors';
-import axios from 'axios';
 
 const EmployeeDashboard = () => {
   const navigate = useNavigate();
 
   // Dummy data for pending transactions with additional details
-  const [pendingTransactions, setPendingTransactions] = useState([]);
-
-  // Function to fetch pending transactions from the database
-  const fetchPendingTransactions = useCallback(async (token) => {
-    try {
-      const response = await axios.get('https://localhost:3000/employeeDashboard', { // Use the correct API endpoint URL
-        headers: {
-          Authorization: `Bearer ${token}`, // Send token in the Authorization header          
-        },
-      });     
-       setPendingTransactions(response.data); // Assuming response.data contains an array of transactions
-    } catch (error) {
-      console.error('Error fetching pending transactions:', error);
-    }
-  }, []);
-
+  const [pendingTransactions] = useState([
+    { recipientAccNumber: 2182798712, recipientName: 'Nyasha', amount: 150.75, Date: '01 January 2024', RecipientBank: 'StandardBank', swiftCode: '2378728' },
+    { recipientAccNumber: 2182798712, recipientName: 'Nabeel', amount: 300.00, Date: '01 January 2024', RecipientBank: 'StandardBank', swiftCode: '2378728' },
+    { recipientAccNumber: 2182798712, recipientName: 'Nabeel', amount: 300.00, Date: '01 January 2024', RecipientBank: 'StandardBank', swiftCode: '2378728' },
+    { recipientAccNumber: 2182798712, recipientName: 'Nabeel', amount: 300.00, Date: '01 January 2024', RecipientBank: 'StandardBank', swiftCode: '2378728' },
+  ]);
 
   // Handle logout, clear token, and redirect to login
   const handleLogout = useCallback(() => {
@@ -32,11 +21,8 @@ const EmployeeDashboard = () => {
   }, [navigate]);
 
   // Navigate to transaction verification page
-  const handleViewTransactions = (transactionId) => {
-    const token = localStorage.getItem('token');
-    navigate(`/transactionVerification/${transactionId}`,{
-      state: { token },
-    });
+  const handleViewTransactions = () => {
+    navigate(`/TransactionVerification/`);
   };
 
   // Navigate to all transactions page
@@ -49,8 +35,6 @@ const EmployeeDashboard = () => {
     const token = localStorage.getItem('token');
     if (!token) {
       handleLogout();
-    }else{
-      fetchPendingTransactions(token);
     }
 
     // Event listener for the back button press
@@ -64,7 +48,7 @@ const EmployeeDashboard = () => {
     return () => {
       window.removeEventListener('popstate', handlePopState);
     };
-  }, [handleLogout, fetchPendingTransactions]);
+  }, [handleLogout]);
 
   return (
     <div>
@@ -113,10 +97,10 @@ const EmployeeDashboard = () => {
                     {/* Boxed transaction data */}
                     <Box sx={{ border: `1px solid ${grey[400]}`, p: 2, borderRadius: 1, bgcolor: blue[100] }}>
                       <Typography variant="body1" sx={{ mb: 3 }}><strong>Recipient:</strong> {transaction.recipientName}</Typography>  {/* Added extra spacing here */}
-                      <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}><strong>Account Number:</strong> {transaction.recipientAccountNumber}</Typography>
+                      <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}><strong>Account Number:</strong> {transaction.recipientAccNumber}</Typography>
                       <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}><strong>Amount:</strong> ${transaction.amount}</Typography>
-                      <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}><strong>Date:</strong> {transaction.date}</Typography>
-                      <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}><strong>Bank:</strong> {transaction.recipientBank}</Typography>
+                      <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}><strong>Date:</strong> {transaction.Date}</Typography>
+                      <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}><strong>Bank:</strong> {transaction.RecipientBank}</Typography>
                       <Typography variant="body2" color="text.secondary"><strong>SWIFT Code:</strong> {transaction.swiftCode}</Typography>
                     </Box>
                   </CardContent>
@@ -124,9 +108,7 @@ const EmployeeDashboard = () => {
                     <Button
                       variant="contained"
                       color="primary"
-                      onClick={() => transaction._id ? handleViewTransactions(transaction._id):
-                        console.error('Transaction ID not found')
-                      }
+                      onClick={() => handleViewTransactions(index)}
                     >
                       Verify
                     </Button>
