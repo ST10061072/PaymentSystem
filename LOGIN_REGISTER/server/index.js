@@ -147,7 +147,7 @@ app.post("/login", async (req, res) => {
         if (user) {
             const isMatch = await bcrypt.compare(password, user.password);
             if (isMatch) {
-                const token = jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: '1h' }); // Token expires in 1 hour
+                const token = jwt.sign({ userId: user._id , name: user.name}, JWT_SECRET, { expiresIn: '1h' }); // Token expires in 1 hour
                 return res.json({ message: "SUCCESS", token }); // Send the token in the response
             } else {
                 return res.status(400).json("Incorrect password");

@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { Link } from "react-router-dom";
-import axios from "axios";
-import {useNavigate} from "react-router-dom"
+import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { Box, Button, Container, Typography, TextField, Paper } from '@mui/material';
 import DOMPurify from 'dompurify';
-import { set } from 'mongoose';
+import { blue, grey } from '@mui/material/colors';
 
 const EmployeeLogin = () => {
 
@@ -68,34 +68,51 @@ const EmployeeLogin = () => {
         console.log('Password:', password);
     };
 
-    return (
-        <div className="login-container">
-            <h2 className="employee-header">Employee Portal</h2>
-            <form onSubmit={handleLogin} className ="employee-form">
-                <div className="form-group">
-                    <label htmlFor="username">Username:</label>
-                    <input
-                        type="text"
-                        id="username"
+     return (
+        <Container maxWidth="sm" sx={{ mt: 8 }}>
+            <Paper elevation={3} sx={{ padding: 4, bgcolor: blue[50], borderRadius: 2 }}>
+                <Typography variant="h5" align="center" gutterBottom sx={{ color: blue[700] }}>
+                    Employee Portal
+                </Typography>
+                <Typography variant="body2" align="center" color="error" sx={{ mb: 2 }}>
+                    {error}
+                </Typography>
+                <Box component="form" onSubmit={handleLogin} sx={{ textAlign: 'center' }}>
+                    <TextField
+                        label="Username"
+                        variant="outlined"
+                        fullWidth
+                        required
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
-                        required
+                        sx={{ mb: 3, bgcolor: grey[100] }}
                     />
-                </div>
-                <div className="form-group">
-                    <label htmlFor="password">Password:</label>
-                    <input
+                    <TextField
+                        label="Password"
                         type="password"
-                        id="password"
+                        variant="outlined"
+                        fullWidth
+                        required
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                        required
+                        sx={{ mb: 3, bgcolor: grey[100] }}
                     />
-                </div>
-                <button type="submit">Login</button>
-            </form>
-            <Link to="/login">Are you a Customer?</Link>
-        </div>
+                    <Button
+                        type="submit"
+                        variant="contained"
+                        fullWidth
+                        sx={{ bgcolor: blue[500], color: 'white', mb: 2 }}
+                    >
+                        Login
+                    </Button>
+                </Box>
+                <Typography variant="body2" align="center" sx={{ color: blue[500] }}>
+                    <Link to="/login" style={{ textDecoration: 'none', color: blue[500] }}>
+                        Are you a Customer?
+                    </Link>
+                </Typography>
+            </Paper>
+        </Container>
     );
 };
 

@@ -1,14 +1,13 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom'; // Make sure to install react-router-dom
+import {React, useState, useEffect} from 'react';
+import { useNavigate } from 'react-router-dom'; 
 import Menu from './Menu';
 import BankingDetails from './BankingDetails';
 import PaymentReceipts from './PaymentReceipts';
-import { Button, Container } from '@mui/material';
+import { Button, Container, Box } from '@mui/material';
 import axios from "axios";
 
 const CustomerDashboard = () => {
   const navigate = useNavigate(); // Hook for navigation
-
   const token = localStorage.getItem('token');
 
   const handleLocalPayment = () => {
@@ -37,7 +36,7 @@ const handleInternationalPayment = () => {
 
   return (
     <Container>
-      <h2>Welcome Customer</h2>
+      <h2>Welcome  Customer </h2>
 
       <div style={styles.paymentOptions}>
         <Button 

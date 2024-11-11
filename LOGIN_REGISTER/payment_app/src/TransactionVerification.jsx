@@ -127,100 +127,133 @@ const handleRejectTransaction = async (transactionId) => {
   
 };
 
-  return (
-    <Container>
-      <Paper style={styles.paper}>
-        <Typography variant="h4" style={styles.title}>Bank Employee Verification</Typography>
+return (
+  <Container maxWidth="md">
+      <Paper style={styles.paper} elevation={3}>
+          <Typography variant="h4" style={styles.title}>Bank Employee Verification</Typography>
 
-        {error && <Alert severity="error" style={styles.alert}>{error}</Alert>}
-        {success && <Alert severity="success" style={styles.alert}>{success}</Alert>}
+          {error && <Alert severity="error" style={styles.alert}>{error}</Alert>}
+          {success && <Alert severity="success" style={styles.alert}>{success}</Alert>}
 
-        {transactions.map(transaction => (
-          <form key={transaction._id} style={styles.form}>
-            <Typography variant="h6" style={styles.transactionTitle}>Transaction ID: {transaction._id}</Typography>
+          {transactions.map(transaction => (
+              <form key={transaction._id} style={styles.form}>
+                  <Typography variant="h6" style={styles.transactionTitle}>
+                      Transaction ID: {transaction._id}
+                  </Typography>
 
-            <Grid container spacing={3}>
-              {['recipientName', 'recipientBank', 'recipientAccountNumber', 'amount', 'swiftCode'].map(field => (
-                <Grid item xs={12} key={field}>
-                  <TextField
-                    fullWidth
-                    variant="outlined"
-                    label={field.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
-                    defaultValue={transaction[field]}
-                    InputProps={{ readOnly: true }}
-                  />
-                  <Checkbox
-                    checked={verifiedFields[transaction._id]?.[field] || false}
-                    onChange={() => handleVerifyField(transaction._id, field, !verifiedFields[transaction._id]?.[field])}
-                    color="primary"
-                  />
+                  <Grid container spacing={2}>
+                      {['recipientName', 'recipientBank', 'recipientAccountNumber', 'amount', 'swiftCode'].map(field => (
+                          <Grid item xs={12} sm={6} key={field} style={styles.fieldContainer}>
+                              <TextField
+                                  fullWidth
+                                  variant="outlined"
+                                  label={field.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
+                                  defaultValue={transaction[field] || 'Data unavailable'}
+                                  InputProps={{ readOnly: true }}
+                                  style={styles.textField}
+                                  error={!transaction[field]}
+                              />
+                              <div style={styles.checkboxContainer}>
+                                  <Checkbox
+                                      checked={verifiedFields[transaction._id]?.[field] || false}
+                                      onChange={() => handleVerifyField(transaction._id, field, !verifiedFields[transaction._id]?.[field])}
+                                      color="primary"
+                                  />
+                                  <Button
+                                      variant="contained"
+                                      color="primary"
+                                      onClick={() => handleVerifyField(transaction._id, field, true)}
+                                      style={styles.verifyButton}
+                                  >
+                                      Verify
+                                  </Button>
+                              </div>
+                          </Grid>
+                      ))}
+                  </Grid>
+              </form>
+          ))}
+
+          <Grid container spacing={3} style={styles.buttonContainer}>
+              <Grid item xs={6}>
                   <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={() => handleVerifyField(transaction._id, field, true)}
-                    style={{ marginLeft: '10px' }}
+                      variant="contained"
+                      color="secondary"
+                      style={styles.actionButton}
+                      onClick={handleSubmitToSwift}
+                      fullWidth
                   >
-                    Verified
+                      Submit to SWIFT
                   </Button>
-                </Grid>
-              ))}
-            </Grid>
-          </form>
-        ))}
-
-        <Grid container spacing={3} style={styles.buttonContainer}>
-          <Grid item xs={6}>
-            <Button
-              variant="contained"
-              color="secondary"
-              style={styles.submitButton}
-              onClick={handleSubmitToSwift}
-              fullWidth
-            >
-              Submit to SWIFT
-            </Button>
+              </Grid>
+              <Grid item xs={6}>
+                  <Button
+                      variant="outlined"
+                      color="error"
+                      onClick={() => transactions.forEach(transaction => handleRejectTransaction(transaction._id))}
+                      fullWidth
+                      style={styles.actionButton}
+                  >
+                      Reject
+                  </Button>
+              </Grid>
           </Grid>
-          <Grid item xs={6}>
-            <Button
-              variant="outlined"
-              color="error"
-              onClick={() => transactions.forEach(transaction => handleRejectTransaction(transaction._id))}
-              fullWidth
-            >
-              Reject
-            </Button>
-          </Grid>
-        </Grid>
       </Paper>
-    </Container>
-  );
+  </Container>
+);
 };
 
 const styles = {
-  paper: {
-    padding: '20px',
+paper: {
+    padding: '30px',
     marginTop: '20px',
-  },
-  title: {
-    marginBottom: '20px',
-  },
-  form: {
-    width: '100%', // Fix IE 11 issue.
-    marginTop: '10px',
-  },
-  transactionTitle: {
-    marginBottom: '10px',
+    borderRadius: '8px',
+    backgroundColor: '#f5f5f5',
+},
+title: {
+    marginBottom: '25px',
     fontWeight: 'bold',
-  },
-  buttonContainer: {
-    marginTop: '20px',
-  },
-  submitButton: {
+    color: '#333',
+},
+form: {
     width: '100%',
-  },
-  alert: {
     marginBottom: '20px',
-  },
+    padding: '15px',
+    border: '1px solid #e0e0e0',
+    borderRadius: '8px',
+    backgroundColor: '#ffffff',
+},
+transactionTitle: {
+    marginBottom: '15px',
+    fontWeight: '600',
+    color: '#444',
+},
+fieldContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+},
+textField: {
+    marginBottom: '10px',
+},
+checkboxContainer: {
+    display: 'flex',
+    alignItems: 'center',
+    marginTop: '5px',
+},
+verifyButton: {
+    marginLeft: '10px',
+    padding: '5px 10px',
+},
+buttonContainer: {
+    marginTop: '25px',
+},
+actionButton: {
+    fontWeight: 'bold',
+    padding: '10px 0',
+},
+alert: {
+    marginBottom: '20px',
+},
 };
 
 export default TransactionVerification;

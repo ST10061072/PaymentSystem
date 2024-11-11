@@ -1,4 +1,4 @@
-import React from 'react';
+import React,{useStateate} from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button, Box } from '@mui/material';
 
@@ -9,6 +9,9 @@ const Menu = () => {
   const handleNavigate = (path) => {
     if (path === '/transactions' || path === '/payments') {
       setMessage('This functionality is not available yet.');
+    } else if (path === '/') {
+      localStorage.removeItem('token'); // Clear the token for logout
+      navigate('/login'); 
     } else {
       setMessage('');
       navigate(path);
@@ -25,7 +28,7 @@ const Menu = () => {
       >
         Home
       </Button>
-      
+
       <Button 
         variant="contained" 
         color="primary" 
