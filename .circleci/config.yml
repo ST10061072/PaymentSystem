@@ -10,6 +10,10 @@ jobs:
       - run:
           name: "Say hello"
           command: "echo Hello, World!"
+      - persist_to_workspace:
+          root: /build
+          paths:
+            - .
 
   sonarqube:
     docker:
@@ -39,3 +43,5 @@ workflows:
     jobs:
       - say-hello
       - sonarqube
+
+    
