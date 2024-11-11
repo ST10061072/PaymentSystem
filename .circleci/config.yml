@@ -1,0 +1,52 @@
+version: 2.1
+
+executors:
+  default:
+    docker:
+      - image: circleci/python:3.8
+
+jobs:
+  build:
+    executor: default
+    steps:
+      - checkout
+      - run:
+          name: Install dependencies
+          command: |
+            python -m venv venv
+            . venv/bin/activate
+            pip install -r requirements.txt
+      - run:
+          name: Run tests
+          command: |
+            . venv/bin/activate
+            pytest
+
+  sonar:
+    executor: default  # Using same executor for consistency
+    steps:
+      - checkout
+      - run:
+          name: Install SonarQube Scanner
+          command: |
+            curl -sSLo sonar-scanner-cli.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.6.2.2472-linux.zip
+            unzip sonar-scanner-cli.zip -d /usr/local
+            mv /usr/local/sonar-scanner-4.6.2.2472-linux /usr/local/sonar-scanner
+            export PATH=$PATH:/usr/local/sonar-scanner/bin
+      - run:
+          name: Run SonarQube analysis
+          command: |
+            sonar-scanner \
+              -Dsonar.projectKey=ST10061072_PaymentSystem \
+              -Dsonar.sources=. \
+              -Dsonar.host.url=https://sonarcloud.io/project/analysis_method?id=ST10061072_PaymentSystem \
+              -Dsonar.login=5bd702f4aeb2d49a662e7876103a08a6057c7573
+
+workflows:
+  version: 2
+  build_and_analyze:
+    jobs:
+      - build
+      - sonar:
+          requires:
+            - build
