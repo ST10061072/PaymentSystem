@@ -8,6 +8,9 @@ jobs:
     steps:
       - checkout
       - run:
+          name: "Create /build directory"
+          command: mkdir -p /build
+      - run:
           name: "Say hello"
           command: "echo Hello, World!"
       - persist_to_workspace:
@@ -21,6 +24,9 @@ jobs:
     resource_class: small
     working_directory: /build
     steps:
+      - run:
+          name: "Create /build directory if not present"
+          command: mkdir -p /build
       - attach_workspace:
           at: /build
       - run:
@@ -43,5 +49,3 @@ workflows:
     jobs:
       - say-hello
       - sonarqube
-
-    
