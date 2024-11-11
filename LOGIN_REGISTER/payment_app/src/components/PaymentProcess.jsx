@@ -10,6 +10,7 @@ const PaymentProcess = () => {
     recipientAccountNumber: '',
     amount: '',
     swiftCode: '',
+    status:'pending',
   });
   
   const [message, setMessage] = useState('');
@@ -44,7 +45,7 @@ const PaymentProcess = () => {
       return;
     }
 
-    const { recipientName, recipientBank, recipientAccountNumber, amount, swiftCode } = paymentDetails;
+    const { recipientName, recipientBank, recipientAccountNumber, amount, swiftCode, status } = paymentDetails;
 
     // Check if all fields are filled using regex
     const isEmpty = (field) => /^\s*$/.test(field);
@@ -107,6 +108,7 @@ const PaymentProcess = () => {
         recipientAccountNumber: '',
         amount: '',
         swiftCode: '',
+        status:'pending',
       });
     } catch (error) {
       console.error('Error:', error);
